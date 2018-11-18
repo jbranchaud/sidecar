@@ -10,5 +10,5 @@ Second, launch the CRA client on port `3000`.
 
 Then, visit [`localhost:3000`](http://localhost:3000) to interact with the
 client interface of the app. Additionally, visit
-[`localhost:3001/admin`](http://localhost:3001) to access the Rails-powered
-admin panel for the app.
+[`localhost:3001/admin`](http://localhost:3001/admin) to access the
+Rails-powered admin panel for the app.
