@@ -1,15 +1,50 @@
 import React, { Component } from 'react';
-import { Pane, TextInputField, Button, Alert } from 'evergreen-ui';
+import {
+  Pane,
+  TextInputField,
+  Button,
+  Alert,
+  Tab,
+  TabNavigation,
+} from 'evergreen-ui';
+import { Router, Link, Location } from '@reach/router';
 
-const Home = () => {
+const ExactNavLink = props =>
+  <Location>
+    {({ location }) => {
+      const isSelected = location.pathname === props.to;
+
+      return (
+        <Tab isSelected={isSelected}>
+          <Link
+            {...props}
+            style={{
+              color: isSelected ? 'rgb(16, 112, 202)' : 'rgb(66, 90, 112)',
+              textDecoration: 'none',
+            }}
+          />
+        </Tab>
+      );
+    }}
+  </Location>;
+
+const Header = () => {
   return (
-    <div>
+    <Pane>
+      <TabNavigation>
+        <ExactNavLink to="/">Home</ExactNavLink>
+        <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
+      </TabNavigation>
       <h1>Sidecar</h1>
-    </div>
+    </Pane>
   );
 };
 
-class App extends Component {
+const Home = () => {
+  return <p>Welcome, you are home!</p>;
+};
+
+class SignIn extends Component {
   checkPassword = ({ email, password }) => {
     fetch('/api/check_password', {
       method: 'POST',
@@ -61,51 +96,60 @@ class App extends Component {
       this.state.passwordCheck !== null && !this.state.passwordCheck;
 
     return (
-      <Pane padding="1rem">
-        <Home />
-        <form onSubmit={this.handleSubmit}>
-          <Pane display="flex" flexDirection="column" width="280px">
-            {passwordCheckSucceeded &&
-              <Alert
-                appearance="card"
-                intent="success"
-                title="Your password is correct"
-                marginBottom={32}
-              />}
-            {passwordCheckFailed &&
-              <Alert
-                appearance="card"
-                intent="danger"
-                title="Your password is incorrect"
-                marginBottom={32}
-              />}
-            <TextInputField
-              label="Email"
-              type="text"
-              name="email"
-              onChange={this.handleEmailChange}
-              value={this.state.email}
-            />
-            <TextInputField
-              label="Password"
-              type="password"
-              name="password"
-              onChange={this.handlePasswordChange}
-              value={this.state.password}
-            />
-            <Button
-              intent="default"
-              type="submit"
-              onClick={this.handleSubmit}
-              justifyContent="center"
-            >
-              Check Password
-            </Button>
-          </Pane>
-        </form>
-      </Pane>
+      <form onSubmit={this.handleSubmit}>
+        <Pane display="flex" flexDirection="column" width="280px">
+          {passwordCheckSucceeded &&
+            <Alert
+              appearance="card"
+              intent="success"
+              title="Your password is correct"
+              marginBottom={32}
+            />}
+          {passwordCheckFailed &&
+            <Alert
+              appearance="card"
+              intent="danger"
+              title="Your password is incorrect"
+              marginBottom={32}
+            />}
+          <TextInputField
+            label="Email"
+            type="text"
+            name="email"
+            onChange={this.handleEmailChange}
+            value={this.state.email}
+          />
+          <TextInputField
+            label="Password"
+            type="password"
+            name="password"
+            onChange={this.handlePasswordChange}
+            value={this.state.password}
+          />
+          <Button
+            intent="default"
+            type="submit"
+            onClick={this.handleSubmit}
+            justifyContent="center"
+          >
+            Check Password
+          </Button>
+        </Pane>
+      </form>
     );
   }
 }
+
+const App = () => {
+  return (
+    <Pane padding="1rem">
+      <Header />
+      <Router>
+        <Home path="/" />
+        <SignIn path="/sign-in" />
+      </Router>
+    </Pane>
+  );
+};
 
 export default App;
