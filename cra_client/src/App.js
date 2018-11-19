@@ -47,47 +47,71 @@ const Home = () => {
   return <p>Welcome, you are home!</p>;
 };
 
-const SignUpContainer = () => {
-  return (
-    <Formik
-      initialValues={{ email: '', password: '', passwordConfirmation: '' }}
-      validationSchema={Yup.object().shape({
-        email: Yup.string().label('Email').required(),
-        password: Yup.string().label('Password').required(),
-        passwordConfirmation: Yup.string()
-          .label('Password Confirmation')
-          .oneOf([Yup.ref('password'), null], 'Passwords must match'),
-      })}
-      onSubmit={(values, { setSubmitting }) => {
-        // submit data to sign up endpoint
-        // if it comes back successfully, show 'You signed up!'
-        // if it comes back with a failure, show specific message
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
-      }}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        isSubmitting,
-      }) =>
-        <SignUp
-          values={values}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          errors={errors}
-          touched={touched}
-        />}
-    </Formik>
-  );
-};
+class SignUpContainer extends React.Component {
+  state = {
+    success: null,
+    message: null,
+  };
+
+  updateSuccessState = ({ success, message }) => {
+    this.setState({ success, message });
+  };
+
+  render() {
+    return (
+      <Formik
+        initialValues={{ email: '', password: '', passwordConfirmation: '' }}
+        validationSchema={Yup.object().shape({
+          email: Yup.string().label('Email').required(),
+          password: Yup.string().label('Password').required(),
+          passwordConfirmation: Yup.string()
+            .label('Password Confirmation')
+            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+        })}
+        onSubmit={(values, { setSubmitting }) => {
+          fetch('/api/sign_up', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: values.email,
+              password: values.password,
+              password_confirmation: values.passwordConfirmation,
+            }),
+          })
+            .then(response => {
+              return response.json();
+            })
+            .then(json => {
+              this.updateSuccessState({
+                success: json.success,
+                message: json.message,
+              });
+            });
+        }}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) =>
+          <SignUp
+            values={values}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            errors={errors}
+            touched={touched}
+            success={this.state.success}
+            message={this.state.message}
+          />}
+      </Formik>
+    );
+  }
+}
 
 const SignUp = ({
   onSubmit,
@@ -96,7 +120,15 @@ const SignUp = ({
   isSubmitting,
   errors,
   touched,
+  success,
+  message,
 }) => {
+  const signUpSucceeded = success === true;
+  const signUpSuccessMessage = message || 'Success!';
+
+  const signUpFailed = success === false;
+  const signUpFailedMessage = message || 'Failure!';
+
   const emailIsInvalid = !!(errors['email'] && touched['email']);
   const emailValidationMessage = emailIsInvalid ? errors['email'] : null;
 
@@ -115,20 +147,20 @@ const SignUp = ({
   return (
     <form onSubmit={onSubmit}>
       <Pane display="flex" flexDirection="column" width="280px">
-        {/*passwordCheckSucceeded &&
-            <Alert
-              appearance="card"
-              intent="success"
-              title="Your password is correct"
-              marginBottom={32}
-            />*/}
-        {/*passwordCheckFailed &&
-            <Alert
-              appearance="card"
-              intent="danger"
-              title="Your password is incorrect"
-              marginBottom={32}
-            />*/}
+        {signUpSucceeded &&
+          <Alert
+            appearance="card"
+            intent="success"
+            title={signUpSuccessMessage}
+            marginBottom={32}
+          />}
+        {signUpFailed &&
+          <Alert
+            appearance="card"
+            intent="danger"
+            title={signUpFailedMessage}
+            marginBottom={32}
+          />}
         <TextInputField
           label="Email"
           type="text"
