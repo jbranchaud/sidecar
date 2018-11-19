@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Pane, TextInputField, Button, Alert } from 'evergreen-ui';
+
+const Home = () => {
+  return (
+    <div>
+      <h1>Sidecar</h1>
+    </div>
+  );
+};
 
 class App extends Component {
   checkPassword = ({ email, password }) => {
@@ -16,7 +23,7 @@ class App extends Component {
         return response.json();
       })
       .then(json => {
-        alert(json['valid_pass']);
+        this.setState({ passwordCheck: !!json['valid_pass'] });
       })
       .catch(err => {
         alert('Something went wrong!');
@@ -27,6 +34,7 @@ class App extends Component {
   state = {
     email: '',
     password: '',
+    passwordCheck: null,
   };
 
   handleSubmit = e => {
@@ -47,42 +55,55 @@ class App extends Component {
   };
 
   render() {
+    const passwordCheckSucceeded =
+      this.state.passwordCheck !== null && this.state.passwordCheck;
+    const passwordCheckFailed =
+      this.state.passwordCheck !== null && !this.state.passwordCheck;
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <Pane padding="1rem">
+        <Home />
         <form onSubmit={this.handleSubmit}>
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            name="email"
-            onChange={this.handleEmailChange}
-            value={this.state.email}
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            onChange={this.handlePasswordChange}
-            value={this.state.password}
-          />
-          <button type="submit" onClick={this.handleSubmit}>
-            Check Password
-          </button>
+          <Pane display="flex" flexDirection="column" width="280px">
+            {passwordCheckSucceeded &&
+              <Alert
+                appearance="card"
+                intent="success"
+                title="Your password is correct"
+                marginBottom={32}
+              />}
+            {passwordCheckFailed &&
+              <Alert
+                appearance="card"
+                intent="danger"
+                title="Your password is incorrect"
+                marginBottom={32}
+              />}
+            <TextInputField
+              label="Email"
+              type="text"
+              name="email"
+              onChange={this.handleEmailChange}
+              value={this.state.email}
+            />
+            <TextInputField
+              label="Password"
+              type="password"
+              name="password"
+              onChange={this.handlePasswordChange}
+              value={this.state.password}
+            />
+            <Button
+              intent="default"
+              type="submit"
+              onClick={this.handleSubmit}
+              justifyContent="center"
+            >
+              Check Password
+            </Button>
+          </Pane>
         </form>
-      </div>
+      </Pane>
     );
   }
 }
