@@ -8,6 +8,8 @@ import {
   TabNavigation,
 } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 const ExactNavLink = props =>
   <Location>
@@ -34,6 +36,7 @@ const Header = () => {
       <TabNavigation>
         <ExactNavLink to="/">Home</ExactNavLink>
         <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
+        <ExactNavLink to="/sign-up">Sign Up</ExactNavLink>
       </TabNavigation>
       <h1>Sidecar</h1>
     </Pane>
@@ -42,6 +45,128 @@ const Header = () => {
 
 const Home = () => {
   return <p>Welcome, you are home!</p>;
+};
+
+const SignUpContainer = () => {
+  return (
+    <Formik
+      initialValues={{ email: '', password: '', passwordConfirmation: '' }}
+      validationSchema={Yup.object().shape({
+        email: Yup.string().label('Email').required(),
+        password: Yup.string().label('Password').required(),
+        passwordConfirmation: Yup.string()
+          .label('Password Confirmation')
+          .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+      })}
+      onSubmit={(values, { setSubmitting }) => {
+        // submit data to sign up endpoint
+        // if it comes back successfully, show 'You signed up!'
+        // if it comes back with a failure, show specific message
+        setTimeout(() => {
+          alert(JSON.stringify(values, null, 2));
+          setSubmitting(false);
+        }, 400);
+      }}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        isSubmitting,
+      }) =>
+        <SignUp
+          values={values}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          errors={errors}
+          touched={touched}
+        />}
+    </Formik>
+  );
+};
+
+const SignUp = ({
+  onSubmit,
+  onChange,
+  values,
+  isSubmitting,
+  errors,
+  touched,
+}) => {
+  const emailIsInvalid = !!(errors['email'] && touched['email']);
+  const emailValidationMessage = emailIsInvalid ? errors['email'] : null;
+
+  const passwordIsInvalid = !!(errors['password'] && touched['password']);
+  const passwordValidationMessage = passwordIsInvalid
+    ? errors['password']
+    : null;
+
+  const passwordConfirmationIsInvalid = !!(
+    errors['passwordConfirmation'] && touched['passwordConfirmation']
+  );
+  const passwordConfirmationValidationMessage = passwordConfirmationIsInvalid
+    ? errors['passwordConfirmation']
+    : null;
+
+  return (
+    <form onSubmit={onSubmit}>
+      <Pane display="flex" flexDirection="column" width="280px">
+        {/*passwordCheckSucceeded &&
+            <Alert
+              appearance="card"
+              intent="success"
+              title="Your password is correct"
+              marginBottom={32}
+            />*/}
+        {/*passwordCheckFailed &&
+            <Alert
+              appearance="card"
+              intent="danger"
+              title="Your password is incorrect"
+              marginBottom={32}
+            />*/}
+        <TextInputField
+          label="Email"
+          type="text"
+          name="email"
+          onChange={onChange}
+          value={values.email}
+          isInvalid={emailIsInvalid}
+          validationMessage={emailValidationMessage}
+        />
+        <TextInputField
+          label="Password"
+          type="password"
+          name="password"
+          onChange={onChange}
+          value={values.password}
+          isInvalid={passwordIsInvalid}
+          validationMessage={passwordValidationMessage}
+        />
+        <TextInputField
+          label="Password Confirmation"
+          type="password"
+          name="passwordConfirmation"
+          onChange={onChange}
+          value={values.passwordConfirmation}
+          isInvalid={passwordConfirmationIsInvalid}
+          validationMessage={passwordConfirmationValidationMessage}
+        />
+        <Button
+          intent="default"
+          type="submit"
+          onClick={onSubmit}
+          justifyContent="center"
+        >
+          Sign Up
+        </Button>
+      </Pane>
+    </form>
+  );
 };
 
 class SignIn extends Component {
@@ -147,6 +272,7 @@ const App = () => {
       <Router>
         <Home path="/" />
         <SignIn path="/sign-in" />
+        <SignUpContainer path="/sign-up" />
       </Router>
     </Pane>
   );
