@@ -6,10 +6,22 @@ import {
   Alert,
   Tab,
   TabNavigation,
+  Heading,
+  Text,
 } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
+import './css/base.css';
+
+const SectionHeading = ({ children, ...props }) => {
+  return (
+    <Heading size={700} paddingBottom="1rem" {...props}>
+      {children}
+    </Heading>
+  );
+};
 
 const ExactNavLink = props =>
   <Location>
@@ -32,19 +44,27 @@ const ExactNavLink = props =>
 
 const Header = () => {
   return (
-    <Pane>
+    <Pane
+      width="100%"
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      padding="1rem"
+    >
+      <Heading is="h1" size={900}>
+        Sidecar
+      </Heading>
       <TabNavigation>
         <ExactNavLink to="/">Home</ExactNavLink>
         <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
         <ExactNavLink to="/sign-up">Sign Up</ExactNavLink>
       </TabNavigation>
-      <h1>Sidecar</h1>
     </Pane>
   );
 };
 
 const Home = () => {
-  return <p>Welcome, you are home!</p>;
+  return <Text>Welcome, you are home!</Text>;
 };
 
 class SignUpContainer extends React.Component {
@@ -147,6 +167,7 @@ const SignUp = ({
   return (
     <form onSubmit={onSubmit}>
       <Pane display="flex" flexDirection="column" width="280px">
+        <SectionHeading>Sign Up</SectionHeading>
         {signUpSucceeded &&
           <Alert
             appearance="card"
@@ -255,6 +276,7 @@ class SignIn extends Component {
     return (
       <form onSubmit={this.handleSubmit}>
         <Pane display="flex" flexDirection="column" width="280px">
+          <SectionHeading>Sign In</SectionHeading>
           {passwordCheckSucceeded &&
             <Alert
               appearance="card"
@@ -299,13 +321,34 @@ class SignIn extends Component {
 
 const App = () => {
   return (
-    <Pane padding="1rem">
+    <Pane>
       <Header />
-      <Router>
-        <Home path="/" />
-        <SignIn path="/sign-in" />
-        <SignUpContainer path="/sign-up" />
-      </Router>
+      <Pane
+        className="base-background"
+        display="flex"
+        justifyContent="center"
+        width="100%"
+        padding="1rem"
+        height="100%"
+      >
+        <Pane
+          elevation={2}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          maxWidth="540px"
+          width="100%"
+          background="#fff"
+          padding="2rem"
+          borderRadius="0.5rem"
+        >
+          <Router>
+            <Home path="/" />
+            <SignIn path="/sign-in" />
+            <SignUpContainer path="/sign-up" />
+          </Router>
+        </Pane>
+      </Pane>
     </Pane>
   );
 };
