@@ -1,9 +1,11 @@
 class AuthenticationController < ApiController
   def check_password
-    @user = User.find_by(email: params[:email])
+    # @user = User.find_by(email: params[:email])
 
-    if @user && @user.check_password(params[:password])
-      render json: {email: params[:email], valid_pass: true}.to_json
+    command = AuthenticateUser.new(params[:email], params[:password])
+
+    if token = command.call
+      render json: {email: params[:email], token: token, valid_pass: true}.to_json
     else
       render json: {email: params[:email], valid_pass: false}.to_json
     end
