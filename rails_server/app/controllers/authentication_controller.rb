@@ -1,8 +1,11 @@
 class AuthenticationController < ApiController
-  def check_password
+  skip_before_action :check_authentication, only: [:sign_up, :sign_in]
+
+  def sign_in
     command = AuthenticateUser.new(params[:email], params[:password])
 
     if token = command.call
+      response.set_header('AUTHORIZATION', "Bearer #{token}")
       render json: {email: params[:email], token: token, valid_pass: true}.to_json
     else
       render json: {email: params[:email], valid_pass: false}.to_json

@@ -10,7 +10,7 @@ import {
   Heading,
   Text,
 } from 'evergreen-ui';
-import { Router, Link, Location } from '@reach/router';
+import { Router, Link, Location, navigate } from '@reach/router';
 import React, { Component } from 'react';
 
 import SectionHeading from './components/SectionHeading';
@@ -57,13 +57,62 @@ const Header = () => {
   );
 };
 
-const Home = () => {
-  return <Text>Welcome, you are home!</Text>;
-};
+class Home extends React.Component {
+  state = {
+    loading: true,
+    data: {},
+  };
+
+  componentDidMount() {
+    const authToken = localStorage.getItem('auth_token');
+
+    if (authToken) {
+      fetch('/api/user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authToken,
+        },
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+          this.setState({ loading: false, data: { email: json.email } });
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({ loading: false });
+        });
+    } else {
+      this.setState({ loading: false });
+    }
+  }
+
+  render() {
+    if (this.state.loading) {
+      return <Text>Loading...</Text>;
+    } else {
+      if (this.state.data.email) {
+        return (
+          <Text>
+            Welcome, {this.state.data.email}! You are home.
+          </Text>
+        );
+      } else {
+        return (
+          <Text>
+            Welcome, <Link to={'/sign-in'}>click here</Link> to sign in!
+          </Text>
+        );
+      }
+    }
+  }
+}
 
 class SignIn extends Component {
-  checkPassword = ({ email, password }) => {
-    fetch('/api/check_password', {
+  signIn = ({ email, password }) => {
+    fetch('/api/sign_in', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -72,10 +121,15 @@ class SignIn extends Component {
       }),
     })
       .then(response => {
+        localStorage.setItem(
+          'auth_token',
+          response.headers.get('Authorization')
+        );
         return response.json();
       })
       .then(json => {
         this.setState({ passwordCheck: !!json['valid_pass'] });
+        navigate('/');
       })
       .catch(err => {
         alert('Something went wrong!');
@@ -92,7 +146,7 @@ class SignIn extends Component {
   handleSubmit = e => {
     e.preventDefault();
 
-    this.checkPassword({
+    this.signIn({
       email: this.state.email,
       password: this.state.password,
     });
