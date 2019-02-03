@@ -1,7 +1,5 @@
 class AuthenticationController < ApiController
   def check_password
-    # @user = User.find_by(email: params[:email])
-
     command = AuthenticateUser.new(params[:email], params[:password])
 
     if token = command.call
