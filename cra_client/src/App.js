@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import './css/base.css';
+
 import {
   Pane,
   TextInputField,
@@ -10,18 +11,10 @@ import {
   Text,
 } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
+import React, { Component } from 'react';
 
-import './css/base.css';
-
-const SectionHeading = ({ children, ...props }) => {
-  return (
-    <Heading size={700} paddingBottom="1rem" {...props}>
-      {children}
-    </Heading>
-  );
-};
+import SectionHeading from './components/SectionHeading';
+import SignUp from './SignUp';
 
 const ExactNavLink = props =>
   <Location>
@@ -50,6 +43,7 @@ const Header = () => {
       alignItems="center"
       justifyContent="space-between"
       padding="1rem"
+      background="white"
     >
       <Heading is="h1" size={900}>
         Sidecar
@@ -65,161 +59,6 @@ const Header = () => {
 
 const Home = () => {
   return <Text>Welcome, you are home!</Text>;
-};
-
-class SignUpContainer extends React.Component {
-  state = {
-    success: null,
-    message: null,
-  };
-
-  updateSuccessState = ({ success, message }) => {
-    this.setState({ success, message });
-  };
-
-  render() {
-    return (
-      <Formik
-        initialValues={{ email: '', password: '', passwordConfirmation: '' }}
-        validationSchema={Yup.object().shape({
-          email: Yup.string().label('Email').required(),
-          password: Yup.string().label('Password').required(),
-          passwordConfirmation: Yup.string()
-            .label('Password Confirmation')
-            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
-        })}
-        onSubmit={(values, { setSubmitting }) => {
-          fetch('/api/sign_up', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: values.email,
-              password: values.password,
-              password_confirmation: values.passwordConfirmation,
-            }),
-          })
-            .then(response => {
-              return response.json();
-            })
-            .then(json => {
-              this.updateSuccessState({
-                success: json.success,
-                message: json.message,
-              });
-            });
-        }}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) =>
-          <SignUp
-            values={values}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            errors={errors}
-            touched={touched}
-            success={this.state.success}
-            message={this.state.message}
-          />}
-      </Formik>
-    );
-  }
-}
-
-const SignUp = ({
-  onSubmit,
-  onChange,
-  values,
-  isSubmitting,
-  errors,
-  touched,
-  success,
-  message,
-}) => {
-  const signUpSucceeded = success === true;
-  const signUpSuccessMessage = message || 'Success!';
-
-  const signUpFailed = success === false;
-  const signUpFailedMessage = message || 'Failure!';
-
-  const emailIsInvalid = !!(errors['email'] && touched['email']);
-  const emailValidationMessage = emailIsInvalid ? errors['email'] : null;
-
-  const passwordIsInvalid = !!(errors['password'] && touched['password']);
-  const passwordValidationMessage = passwordIsInvalid
-    ? errors['password']
-    : null;
-
-  const passwordConfirmationIsInvalid = !!(
-    errors['passwordConfirmation'] && touched['passwordConfirmation']
-  );
-  const passwordConfirmationValidationMessage = passwordConfirmationIsInvalid
-    ? errors['passwordConfirmation']
-    : null;
-
-  return (
-    <form onSubmit={onSubmit}>
-      <Pane display="flex" flexDirection="column" width="280px">
-        <SectionHeading>Sign Up</SectionHeading>
-        {signUpSucceeded &&
-          <Alert
-            appearance="card"
-            intent="success"
-            title={signUpSuccessMessage}
-            marginBottom={32}
-          />}
-        {signUpFailed &&
-          <Alert
-            appearance="card"
-            intent="danger"
-            title={signUpFailedMessage}
-            marginBottom={32}
-          />}
-        <TextInputField
-          label="Email"
-          type="text"
-          name="email"
-          onChange={onChange}
-          value={values.email}
-          isInvalid={emailIsInvalid}
-          validationMessage={emailValidationMessage}
-        />
-        <TextInputField
-          label="Password"
-          type="password"
-          name="password"
-          onChange={onChange}
-          value={values.password}
-          isInvalid={passwordIsInvalid}
-          validationMessage={passwordValidationMessage}
-        />
-        <TextInputField
-          label="Password Confirmation"
-          type="password"
-          name="passwordConfirmation"
-          onChange={onChange}
-          value={values.passwordConfirmation}
-          isInvalid={passwordConfirmationIsInvalid}
-          validationMessage={passwordConfirmationValidationMessage}
-        />
-        <Button
-          intent="default"
-          type="submit"
-          onClick={onSubmit}
-          justifyContent="center"
-        >
-          Sign Up
-        </Button>
-      </Pane>
-    </form>
-  );
 };
 
 class SignIn extends Component {
@@ -340,12 +179,12 @@ const App = () => {
           width="100%"
           background="#fff"
           padding="2rem"
-          borderRadius="0.5rem"
+          borderRadius="0.25rem"
         >
           <Router>
             <Home path="/" />
             <SignIn path="/sign-in" />
-            <SignUpContainer path="/sign-up" />
+            <SignUp path="/sign-up" />
           </Router>
         </Pane>
       </Pane>
