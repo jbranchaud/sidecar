@@ -11,7 +11,6 @@ class AuthenticationController < ApiController
 
   def sign_up
     @user = User.new(user_params)
-    @user.password = user_params[:password]
 
     if @user.save
       render json: {success: true, message: "You successfully signed up!"}
