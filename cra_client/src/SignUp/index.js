@@ -55,9 +55,9 @@ class SignUpContainer extends React.Component {
             })
             .then(json => {
               if (json.success) {
-                this.setSuccessStatus({ message: json.success });
+                this.setSuccessStatus({ message: json.message });
               } else {
-                this.setFailedStatus({ message: json.success });
+                this.setFailedStatus({ message: json.message });
               }
             });
         }}
