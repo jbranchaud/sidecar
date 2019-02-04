@@ -13,19 +13,19 @@ class AuthenticationController < ApiController
   end
 
   def sign_up
-    @user = User.new(user_params)
+    user_auth = UserAuthentication.sign_up(user_params)
 
-    if @user.save
+    if user_auth.token
+      response.set_header('AUTHORIZATION', "Bearer #{user_auth.token}")
       render json: {success: true, message: "You successfully signed up!"}
     else
-      render json: {success: false, message: "You failed to sign up!"}
+      render json: {success: false, message: user_auth.error}
     end
   end
 
   private
 
   def user_params
-    puts params
     params.permit(:email, :password, :password_confirmation)
   end
 end

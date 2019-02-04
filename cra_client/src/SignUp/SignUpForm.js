@@ -14,12 +14,6 @@ const SignUpForm = ({
   status,
   message,
 }) => {
-  // const signUpSucceeded = success === true;
-  // const signUpSuccessMessage = message || 'Success!';
-
-  // const signUpFailed = success === false;
-  // const signUpFailedMessage = message || 'Failure!';
-
   const emailIsInvalid = !!(errors['email'] && touched['email']);
   const emailValidationMessage = emailIsInvalid ? errors['email'] : null;
 

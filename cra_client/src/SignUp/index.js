@@ -59,6 +59,8 @@ class SignUpContainer extends React.Component {
               } else {
                 this.setFailedStatus({ message: json.message });
               }
+
+              setSubmitting(false);
             });
         }}
       >
