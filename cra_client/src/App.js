@@ -204,7 +204,7 @@ class SignIn extends Component {
             onClick={this.handleSubmit}
             justifyContent="center"
           >
-            Check Password
+            Sign In
           </Button>
         </Pane>
       </form>
