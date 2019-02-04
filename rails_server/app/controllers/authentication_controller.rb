@@ -1,19 +1,19 @@
 class AuthenticationController < ApiController
-  def check_password
-    # @user = User.find_by(email: params[:email])
+  skip_before_action :check_authentication, only: [:sign_up, :sign_in]
 
-    command = AuthenticateUser.new(params[:email], params[:password])
+  def sign_in
+    user_auth = UserAuthentication.sign_in(params[:email], params[:password])
 
-    if token = command.call
-      render json: {email: params[:email], token: token, valid_pass: true}.to_json
+    if user_auth.token
+      response.set_header('AUTHORIZATION', "Bearer #{user_auth.token}")
+      render json: {email: user_auth.user.email, token: user_auth.token, valid_pass: true}.to_json
     else
-      render json: {email: params[:email], valid_pass: false}.to_json
+      render json: {email: params[:email], error: user_auth.error, valid_pass: false}.to_json
     end
   end
 
   def sign_up
     @user = User.new(user_params)
-    @user.password = user_params[:password]
 
     if @user.save
       render json: {success: true, message: "You successfully signed up!"}

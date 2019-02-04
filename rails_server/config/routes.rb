@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   scope '/api' do
     post '/sign_up', to: 'authentication#sign_up'
-    post '/check_password', to: 'authentication#check_password'
+    post '/sign_in', to: 'authentication#sign_in'
+    get  '/user', to: 'user#show'
   end
 end

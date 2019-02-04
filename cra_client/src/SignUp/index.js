@@ -39,7 +39,7 @@ class SignUpContainer extends React.Component {
             .oneOf([Yup.ref('password'), null], 'Passwords must match'),
         })}
         onSubmit={(values, { setSubmitting }) => {
-          this.setStatus({ status: LOADING_STATUS });
+          this.setLoadingStatus();
 
           fetch('/api/sign_up', {
             method: 'POST',
@@ -55,9 +55,9 @@ class SignUpContainer extends React.Component {
             })
             .then(json => {
               if (json.success) {
-                this.setSuccessStatus({ message: json.success });
+                this.setSuccessStatus({ message: json.message });
               } else {
-                this.setFailedStatus({ message: json.success });
+                this.setFailedStatus({ message: json.message });
               }
             });
         }}

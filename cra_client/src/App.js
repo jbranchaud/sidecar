@@ -1,19 +1,10 @@
 import './css/base.css';
 
-import {
-  Pane,
-  TextInputField,
-  Button,
-  Alert,
-  Tab,
-  TabNavigation,
-  Heading,
-  Text,
-} from 'evergreen-ui';
+import { Pane, Tab, TabNavigation, Heading, Text } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
-import React, { Component } from 'react';
+import React from 'react';
 
-import SectionHeading from './components/SectionHeading';
+import SignIn from './SignIn';
 import SignUp from './SignUp';
 
 const ExactNavLink = props =>
@@ -57,104 +48,56 @@ const Header = () => {
   );
 };
 
-const Home = () => {
-  return <Text>Welcome, you are home!</Text>;
-};
-
-class SignIn extends Component {
-  checkPassword = ({ email, password }) => {
-    fetch('/api/check_password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(json => {
-        this.setState({ passwordCheck: !!json['valid_pass'] });
-      })
-      .catch(err => {
-        alert('Something went wrong!');
-        console.log(err);
-      });
-  };
-
+class Home extends React.Component {
   state = {
-    email: '',
-    password: '',
-    passwordCheck: null,
+    loading: true,
+    data: {},
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  componentDidMount() {
+    const authToken = localStorage.getItem('auth_token');
 
-    this.checkPassword({
-      email: this.state.email,
-      password: this.state.password,
-    });
-  };
-
-  handleEmailChange = e => {
-    this.setState({ email: e.target.value });
-  };
-
-  handlePasswordChange = e => {
-    this.setState({ password: e.target.value });
-  };
+    if (authToken) {
+      fetch('/api/user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authToken,
+        },
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+          this.setState({ loading: false, data: { email: json.email } });
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({ loading: false });
+        });
+    } else {
+      this.setState({ loading: false });
+    }
+  }
 
   render() {
-    const passwordCheckSucceeded =
-      this.state.passwordCheck !== null && this.state.passwordCheck;
-    const passwordCheckFailed =
-      this.state.passwordCheck !== null && !this.state.passwordCheck;
-
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <Pane display="flex" flexDirection="column" width="280px">
-          <SectionHeading>Sign In</SectionHeading>
-          {passwordCheckSucceeded &&
-            <Alert
-              appearance="card"
-              intent="success"
-              title="Your password is correct"
-              marginBottom={32}
-            />}
-          {passwordCheckFailed &&
-            <Alert
-              appearance="card"
-              intent="danger"
-              title="Your password is incorrect"
-              marginBottom={32}
-            />}
-          <TextInputField
-            label="Email"
-            type="text"
-            name="email"
-            onChange={this.handleEmailChange}
-            value={this.state.email}
-          />
-          <TextInputField
-            label="Password"
-            type="password"
-            name="password"
-            onChange={this.handlePasswordChange}
-            value={this.state.password}
-          />
-          <Button
-            intent="default"
-            type="submit"
-            onClick={this.handleSubmit}
-            justifyContent="center"
-          >
-            Check Password
-          </Button>
-        </Pane>
-      </form>
-    );
+    if (this.state.loading) {
+      return <Text>Loading...</Text>;
+    } else {
+      if (this.state.data.email) {
+        return (
+          <Text>
+            Welcome, {this.state.data.email}! You are home.
+          </Text>
+        );
+      } else {
+        return (
+          <Text>
+            Welcome, <Link to={'/sign-in'}>click here</Link> to sign in!
+          </Text>
+        );
+      }
+    }
   }
 }
 
