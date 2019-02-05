@@ -4,8 +4,9 @@ import { Pane, Tab, TabNavigation, Heading, Text } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
 import React from 'react';
 
-import { getAuthToken } from './utils/authentication';
+import { getAuthToken, isAuthenticated } from './utils/authentication';
 import SignIn from './SignIn';
+import SignOut from './SignOut';
 import SignUp from './SignUp';
 
 const ExactNavLink = props =>
@@ -42,8 +43,15 @@ const Header = () => {
       </Heading>
       <TabNavigation>
         <ExactNavLink to="/">Home</ExactNavLink>
-        <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
-        <ExactNavLink to="/sign-up">Sign Up</ExactNavLink>
+        {!isAuthenticated() &&
+          <React.Fragment>
+            <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
+            <ExactNavLink to="/sign-up">Sign Up</ExactNavLink>
+          </React.Fragment>}
+        {isAuthenticated() &&
+          <React.Fragment>
+            <ExactNavLink to="/sign-out">Sign Out</ExactNavLink>
+          </React.Fragment>}
       </TabNavigation>
     </Pane>
   );
@@ -129,6 +137,7 @@ const App = () => {
             <Home path="/" />
             <SignIn path="/sign-in" />
             <SignUp path="/sign-up" />
+            <SignOut path="/sign-out" />
           </Router>
         </Pane>
       </Pane>
