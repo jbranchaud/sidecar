@@ -2,6 +2,7 @@ import { Alert, Button, Pane, TextInputField } from 'evergreen-ui';
 import { navigate } from '@reach/router';
 import React from 'react';
 
+import { setAuthToken } from '../utils/authentication';
 import SectionHeading from '../components/SectionHeading';
 
 export const INITIAL_STATUS = 'initial_status';
@@ -36,10 +37,7 @@ class SignIn extends React.Component {
       }),
     })
       .then(response => {
-        localStorage.setItem(
-          'auth_token',
-          response.headers.get('Authorization')
-        );
+        setAuthToken(response.headers.get('Authorization'));
         return response.json();
       })
       .then(json => {

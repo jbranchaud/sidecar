@@ -14,12 +14,6 @@ const SignUpForm = ({
   status,
   message,
 }) => {
-  // const signUpSucceeded = success === true;
-  // const signUpSuccessMessage = message || 'Success!';
-
-  // const signUpFailed = success === false;
-  // const signUpFailedMessage = message || 'Failure!';
-
   const emailIsInvalid = !!(errors['email'] && touched['email']);
   const emailValidationMessage = emailIsInvalid ? errors['email'] : null;
 
@@ -39,13 +33,6 @@ const SignUpForm = ({
     <form onSubmit={onSubmit}>
       <Pane display="flex" flexDirection="column" width="280px">
         <SectionHeading>Sign Up</SectionHeading>
-        {status === SUCCESS_STATUS &&
-          <Alert
-            appearance="card"
-            intent="success"
-            title={message}
-            marginBottom={32}
-          />}
         {status === FAILED_STATUS &&
           <Alert
             appearance="card"

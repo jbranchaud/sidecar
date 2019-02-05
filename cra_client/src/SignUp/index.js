@@ -1,7 +1,10 @@
 import { Formik } from 'formik';
+import { navigate } from '@reach/router';
+import { toaster } from 'evergreen-ui';
 import React from 'react';
 import * as Yup from 'yup';
 
+import { setAuthToken } from '../utils/authentication';
 import SignUpForm from './SignUpForm';
 
 export const INITIAL_STATUS = 'initial_status';
@@ -19,8 +22,8 @@ class SignUpContainer extends React.Component {
     this.setState({ status: LOADING_STATUS, message: null });
   };
 
-  setSuccessStatus = ({ message }) => {
-    this.setState({ status: SUCCESS_STATUS, message: message || 'Success!' });
+  setSuccessStatus = () => {
+    this.setState({ status: SUCCESS_STATUS });
   };
 
   setFailedStatus = ({ message }) => {
@@ -55,10 +58,15 @@ class SignUpContainer extends React.Component {
             })
             .then(json => {
               if (json.success) {
-                this.setSuccessStatus({ message: json.message });
+                this.setSuccessStatus();
+                setAuthToken(json.token);
+                toaster.success(json.message || 'Success!');
+                navigate('/');
               } else {
                 this.setFailedStatus({ message: json.message });
               }
+
+              setSubmitting(false);
             });
         }}
       >
