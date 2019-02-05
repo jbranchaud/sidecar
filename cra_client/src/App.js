@@ -4,6 +4,7 @@ import { Pane, Tab, TabNavigation, Heading, Text } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
 import React from 'react';
 
+import { getAuthToken } from './utils/authentication';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 
@@ -55,7 +56,7 @@ class Home extends React.Component {
   };
 
   componentDidMount() {
-    const authToken = localStorage.getItem('auth_token');
+    const authToken = getAuthToken();
 
     if (authToken) {
       fetch('/api/user', {

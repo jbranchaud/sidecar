@@ -33,13 +33,6 @@ const SignUpForm = ({
     <form onSubmit={onSubmit}>
       <Pane display="flex" flexDirection="column" width="280px">
         <SectionHeading>Sign Up</SectionHeading>
-        {status === SUCCESS_STATUS &&
-          <Alert
-            appearance="card"
-            intent="success"
-            title={message}
-            marginBottom={32}
-          />}
         {status === FAILED_STATUS &&
           <Alert
             appearance="card"
