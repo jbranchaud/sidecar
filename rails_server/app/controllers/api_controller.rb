@@ -5,7 +5,9 @@ class ApiController < ActionController::API
   private
 
   def check_authentication
-    @current_user = AuthenticateApiRequest.new(request.headers).call
+    user_auth = UserAuthentication.check_auth_token(request.headers)
+
+    @current_user = user_auth.user
     render json: { error: 'Not Authorized' }, status: 401 unless @current_user
   end
 end
