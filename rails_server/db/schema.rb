@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_03_172946) do
+ActiveRecord::Schema.define(version: 2019_02_06_234202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,14 @@ ActiveRecord::Schema.define(version: 2019_02_03_172946) do
     t.datetime "updated_at", default: -> { "now()" }, null: false
   end
 
+  create_table "recipes", id: :serial, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "source_url", null: false
+    t.integer "user_id"
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
+  end
+
   create_table "users", id: :serial, force: :cascade do |t|
     t.string "email", null: false
     t.datetime "created_at", default: -> { "now()" }, null: false
@@ -56,4 +64,5 @@ ActiveRecord::Schema.define(version: 2019_02_03_172946) do
     t.index ["email"], name: "users_email_key", unique: true
   end
 
+  add_foreign_key "recipes", "users", name: "recipes_user_id_fkey"
 end

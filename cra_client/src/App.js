@@ -8,6 +8,7 @@ import { getAuthToken, isAuthenticated } from './utils/authentication';
 import SignIn from './SignIn';
 import SignOut from './SignOut';
 import SignUp from './SignUp';
+import CreateRecipe from './Recipe/CreateRecipe';
 
 const ExactNavLink = props =>
   <Location>
@@ -95,9 +96,14 @@ class Home extends React.Component {
     } else {
       if (this.state.data.email) {
         return (
-          <Text>
-            Welcome, {this.state.data.email}! You are home.
-          </Text>
+          <React.Fragment>
+            <Text>
+              Welcome, {this.state.data.email}! You are home.
+            </Text>
+            <Text>
+              Want to <Link to="/recipe/new">create a new recipe</Link>?
+            </Text>
+          </React.Fragment>
         );
       } else {
         return (
@@ -138,6 +144,7 @@ const App = () => {
             <SignIn path="/sign-in" />
             <SignUp path="/sign-up" />
             <SignOut path="/sign-out" />
+            <CreateRecipe path="/recipe/new" />
           </Router>
         </Pane>
       </Pane>
