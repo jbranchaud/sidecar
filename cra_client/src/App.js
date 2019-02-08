@@ -100,7 +100,7 @@ class Home extends React.Component {
           return response.json();
         })
         .then(json => {
-          this.setState({ loadingRecipes: false, recipes: json.recipes });
+          this.setState({ loadingRecipes: false, recipes: json.data });
         })
         .catch(err => {
           this.setState({ loadingRecipes: false });
@@ -131,8 +131,8 @@ class Home extends React.Component {
                     // TODO: change source_url to sourceUrl
                     return (
                       <li key={recipe.id}>
-                        <a href={recipe.source_url}>
-                          {recipe.name}
+                        <a href={recipe.attributes.sourceUrl}>
+                          {recipe.attributes.name}
                         </a>
                       </li>
                     );

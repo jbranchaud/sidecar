@@ -11,7 +11,7 @@ class RecipesController < ApiController
   end
 
   def index
-    render json: { recipes: @current_user.recipes }.to_json
+    render json: RecipeSerializer.new(@current_user.recipes)
   end
 
   private
