@@ -5,10 +5,11 @@ import { Router, Link, Location } from '@reach/router';
 import React from 'react';
 
 import { getAuthToken, isAuthenticated } from './utils/authentication';
+import CreateRecipe from './Recipe/CreateRecipe';
+import SectionHeading from './components/SectionHeading';
 import SignIn from './SignIn';
 import SignOut from './SignOut';
 import SignUp from './SignUp';
-import CreateRecipe from './Recipe/CreateRecipe';
 
 const ExactNavLink = props =>
   <Location>
@@ -61,7 +62,9 @@ const Header = () => {
 class Home extends React.Component {
   state = {
     loading: true,
+    loadingRecipes: true,
     data: {},
+    recipes: [],
   };
 
   componentDidMount() {
@@ -85,6 +88,23 @@ class Home extends React.Component {
           console.log(err);
           this.setState({ loading: false });
         });
+
+      fetch('/api/recipes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authToken,
+        },
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(json => {
+          this.setState({ loadingRecipes: false, recipes: json.recipes });
+        })
+        .catch(err => {
+          this.setState({ loadingRecipes: false });
+        });
     } else {
       this.setState({ loading: false });
     }
@@ -103,6 +123,22 @@ class Home extends React.Component {
             <Text>
               Want to <Link to="/recipe/new">create a new recipe</Link>?
             </Text>
+            {this.state.recipes.length &&
+              <Pane marginTop="2rem">
+                <SectionHeading>Recipes</SectionHeading>
+                <ul>
+                  {this.state.recipes.map(recipe => {
+                    // TODO: change source_url to sourceUrl
+                    return (
+                      <li key={recipe.id}>
+                        <a href={recipe.source_url}>
+                          {recipe.name}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Pane>}
           </React.Fragment>
         );
       } else {

@@ -10,8 +10,8 @@ class RecipesController < ApiController
     end
   end
 
-  def show
-    render json: {email: @current_user.email}.to_json
+  def index
+    render json: { recipes: @current_user.recipes }.to_json
   end
 
   private
