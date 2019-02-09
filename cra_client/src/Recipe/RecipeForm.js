@@ -53,7 +53,7 @@ class RecipeForm extends React.Component {
             onChange={this.handleRecipeSourceUrlChange}
             value={this.state.sourceUrl}
           />
-          <Button intent="default" type="submit" justifyContent="center">
+          <Button intent="none" type="submit" justifyContent="center">
             {this.props.buttonText}
           </Button>
         </Pane>
