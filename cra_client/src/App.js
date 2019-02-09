@@ -10,6 +10,7 @@ import SectionHeading from './components/SectionHeading';
 import SignIn from './SignIn';
 import SignOut from './SignOut';
 import SignUp from './SignUp';
+import UpdateRecipe from './Recipe/UpdateRecipe';
 
 const ExactNavLink = props =>
   <Location>
@@ -135,7 +136,7 @@ class Home extends React.Component {
                         <Pane
                           display="flex"
                           justifyContent="space-between"
-                          background={isOdd && 'tint2'}
+                          background={(isOdd && 'tint2') || ''}
                         >
                           <Text>
                             {recipe.attributes.name}
@@ -146,7 +147,9 @@ class Home extends React.Component {
                               padding="2px"
                               marginLeft="2px"
                             >
-                              <Icon icon="edit" />
+                              <a href={`/recipe/${recipe.id}/edit`}>
+                                <Icon icon="edit" />
+                              </a>
                             </Pane>
                             <Pane
                               borderRadius="3px"
@@ -209,6 +212,7 @@ const App = () => {
             <SignUp path="/sign-up" />
             <SignOut path="/sign-out" />
             <CreateRecipe path="/recipe/new" />
+            <UpdateRecipe path="/recipe/:id/edit" />
           </Router>
         </Pane>
       </Pane>

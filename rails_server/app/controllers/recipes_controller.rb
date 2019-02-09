@@ -10,8 +10,28 @@ class RecipesController < ApiController
     end
   end
 
+  def update
+    if @recipe = @current_user.recipes.find(params[:id])
+      if @recipe.update(recipe_params)
+        render json: RecipeSerializer.new(@recipe)
+      else
+        render json: { error: @recipe.errors.full_messages.first }, status: :bad_request
+      end
+    else
+      render status: :not_found
+    end
+  end
+
   def index
     render json: RecipeSerializer.new(@current_user.recipes)
+  end
+
+  def show
+    if @recipe = @current_user.recipes.find(params[:id])
+      render json: RecipeSerializer.new(@recipe)
+    else
+      render status: :not_found
+    end
   end
 
   private
