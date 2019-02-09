@@ -16,7 +16,7 @@ class CreateRecipe extends React.Component {
       body: JSON.stringify({
         recipe: {
           name,
-          ['source_url']: sourceUrl,
+          source_url: sourceUrl,
         },
       }),
     })
