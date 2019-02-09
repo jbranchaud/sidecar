@@ -1,31 +1,12 @@
-import { Button, Pane, TextInputField, toaster } from 'evergreen-ui';
 import { navigate } from '@reach/router';
+import { toaster } from 'evergreen-ui';
 import React from 'react';
 
 import { getAuthToken } from '../utils/authentication';
-import SectionHeading from '../components/SectionHeading';
+import RecipeForm from './RecipeForm';
 
 class CreateRecipe extends React.Component {
-  state = {
-    recipe: {
-      name: '',
-      sourceUrl: '',
-    },
-  };
-
-  handleRecipeNameChange = e => {
-    this.setState({ recipe: { ...this.state.recipe, name: e.target.value } });
-  };
-
-  handleRecipeSourceUrlChange = e => {
-    this.setState({
-      recipe: { ...this.state.recipe, sourceUrl: e.target.value },
-    });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-
+  handleSubmit = ({ name, sourceUrl }) => {
     fetch('/api/recipes', {
       method: 'POST',
       headers: {
@@ -34,8 +15,8 @@ class CreateRecipe extends React.Component {
       },
       body: JSON.stringify({
         recipe: {
-          name: this.state.recipe.name,
-          ['source_url']: this.state.recipe.sourceUrl,
+          name,
+          ['source_url']: sourceUrl,
         },
       }),
     })
@@ -54,28 +35,12 @@ class CreateRecipe extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <Pane display="flex" flexDirection="column" width="280px">
-          <SectionHeading>Create a new recipe</SectionHeading>
-          <TextInputField
-            label="Name"
-            type="text"
-            name="name"
-            onChange={this.handleRecipeNameChange}
-            value={this.state.recipe.name}
-          />
-          <TextInputField
-            label="Source"
-            type="text"
-            name="sourceUrl"
-            onChange={this.handleRecipeSourceUrlChange}
-            value={this.state.recipe.sourceUrl}
-          />
-          <Button intent="default" type="submit" justifyContent="center">
-            Save
-          </Button>
-        </Pane>
-      </form>
+      <RecipeForm
+        sectionHeading="Create a new Recipe"
+        buttonText="Create"
+        initialRecipe={{ name: '', sourceUrl: '' }}
+        onSubmit={this.handleSubmit}
+      />
     );
   }
 }
