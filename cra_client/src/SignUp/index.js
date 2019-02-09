@@ -4,7 +4,7 @@ import { toaster } from 'evergreen-ui';
 import React from 'react';
 import * as Yup from 'yup';
 
-import { setAuthToken } from '../utils/authentication';
+import { post } from '../utils/fetchUtils';
 import SignUpForm from './SignUpForm';
 
 export const INITIAL_STATUS = 'initial_status';
@@ -44,30 +44,24 @@ class SignUpContainer extends React.Component {
         onSubmit={(values, { setSubmitting }) => {
           this.setLoadingStatus();
 
-          fetch('/api/sign_up', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+          post({
+            endpoint: '/api/sign_up',
+            body: {
               email: values.email,
               password: values.password,
               password_confirmation: values.passwordConfirmation,
-            }),
-          })
-            .then(response => {
-              return response.json();
-            })
-            .then(json => {
-              if (json.success) {
-                this.setSuccessStatus();
-                setAuthToken(json.token);
-                toaster.success(json.message || 'Success!');
-                navigate('/');
-              } else {
-                this.setFailedStatus({ message: json.message });
-              }
+            },
+          }).then(json => {
+            if (json.success) {
+              this.setSuccessStatus();
+              toaster.success(json.message || 'Success!');
+              navigate('/');
+            } else {
+              this.setFailedStatus({ message: json.message });
+            }
 
-              setSubmitting(false);
-            });
+            setSubmitting(false);
+          });
         }}
       >
         {({

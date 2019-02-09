@@ -2,27 +2,20 @@ import { navigate } from '@reach/router';
 import { toaster } from 'evergreen-ui';
 import React from 'react';
 
-import { getAuthToken } from '../utils/authentication';
+import { post } from '../utils/fetchUtils';
 import RecipeForm from './RecipeForm';
 
 class CreateRecipe extends React.Component {
   handleSubmit = ({ name, sourceUrl }) => {
-    fetch('/api/recipes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: getAuthToken(),
-      },
-      body: JSON.stringify({
+    post({
+      endpoint: '/api/recipes',
+      body: {
         recipe: {
           name,
           source_url: sourceUrl,
         },
-      }),
+      },
     })
-      .then(response => {
-        return response.json();
-      })
       .then(json => {
         console.log(json);
         toaster.success('Created a new recipe!');

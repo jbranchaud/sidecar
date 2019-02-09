@@ -4,6 +4,7 @@ import { Heading, Icon, Pane, Tab, TabNavigation, Text } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
 import React from 'react';
 
+import { get } from './utils/fetchUtils';
 import { getAuthToken, isAuthenticated } from './utils/authentication';
 import CreateRecipe from './Recipe/CreateRecipe';
 import SectionHeading from './components/SectionHeading';
@@ -72,16 +73,7 @@ class Home extends React.Component {
     const authToken = getAuthToken();
 
     if (authToken) {
-      fetch('/api/user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authToken,
-        },
-      })
-        .then(response => {
-          return response.json();
-        })
+      get({ endpoint: '/api/user' })
         .then(json => {
           this.setState({ loading: false, data: { email: json.email } });
         })
@@ -90,16 +82,7 @@ class Home extends React.Component {
           this.setState({ loading: false });
         });
 
-      fetch('/api/recipes', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authToken,
-        },
-      })
-        .then(response => {
-          return response.json();
-        })
+      get({ endpoint: '/api/recipes' })
         .then(json => {
           this.setState({ loadingRecipes: false, recipes: json.data });
         })
