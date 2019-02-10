@@ -1,13 +1,13 @@
 import './css/base.css';
 
-import { Heading, Icon, Pane, Tab, TabNavigation, Text } from 'evergreen-ui';
+import { Heading, Pane, Tab, TabNavigation, Text } from 'evergreen-ui';
 import { Router, Link, Location } from '@reach/router';
 import React from 'react';
 
 import { get } from './utils/fetchUtils';
 import { getAuthToken, isAuthenticated } from './utils/authentication';
 import CreateRecipe from './Recipe/CreateRecipe';
-import SectionHeading from './components/SectionHeading';
+import RecipeListing from './Recipe/RecipeListing';
 import SignIn from './SignIn';
 import SignOut from './SignOut';
 import SignUp from './SignUp';
@@ -57,45 +57,6 @@ const Header = () => {
             <ExactNavLink to="/sign-out">Sign Out</ExactNavLink>
           </React.Fragment>}
       </TabNavigation>
-    </Pane>
-  );
-};
-
-const RecipeListing = ({ recipes }) => {
-  return (
-    <Pane marginTop="2rem">
-      <SectionHeading>Recipes</SectionHeading>
-      <ul>
-        {recipes.map((recipe, i) => {
-          const isOdd = i % 2 !== 0;
-
-          return (
-            <li key={recipe.id}>
-              <Pane
-                display="flex"
-                justifyContent="space-between"
-                background={(isOdd && 'tint2') || ''}
-              >
-                <Text>
-                  {recipe.attributes.name}
-                </Text>
-                <Pane display="flex">
-                  <Pane borderRadius="3px" padding="2px" marginLeft="2px">
-                    <a href={`/recipe/${recipe.id}/edit`}>
-                      <Icon icon="edit" />
-                    </a>
-                  </Pane>
-                  <Pane borderRadius="3px" padding="2px" marginLeft="2px">
-                    <a href={recipe.attributes.sourceUrl} target="_blank">
-                      <Icon icon="link" />
-                    </a>
-                  </Pane>
-                </Pane>
-              </Pane>
-            </li>
-          );
-        })}
-      </ul>
     </Pane>
   );
 };
