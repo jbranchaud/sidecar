@@ -5,7 +5,10 @@ import { Router, Link, Location } from '@reach/router';
 import React from 'react';
 
 import { get } from './utils/fetchUtils';
-import { getAuthToken, isAuthenticated } from './utils/authentication';
+import { getAuthToken } from './utils/authentication';
+import AuthenticationContext, {
+  AuthenticationProvider,
+} from './AuthenticationContext';
 import CreateRecipe from './Recipe/CreateRecipe';
 import RecipeListing from './Recipe/RecipeListing';
 import SignIn from './SignIn';
@@ -34,30 +37,33 @@ const ExactNavLink = props =>
 
 const Header = () => {
   return (
-    <Pane
-      width="100%"
-      display="flex"
-      alignItems="center"
-      justifyContent="space-between"
-      padding="1rem"
-      background="white"
-    >
-      <Heading is="h1" size={900}>
-        Sidecar
-      </Heading>
-      <TabNavigation>
-        <ExactNavLink to="/">Home</ExactNavLink>
-        {!isAuthenticated() &&
-          <React.Fragment>
-            <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
-            <ExactNavLink to="/sign-up">Sign Up</ExactNavLink>
-          </React.Fragment>}
-        {isAuthenticated() &&
-          <React.Fragment>
-            <ExactNavLink to="/sign-out">Sign Out</ExactNavLink>
-          </React.Fragment>}
-      </TabNavigation>
-    </Pane>
+    <AuthenticationContext.Consumer>
+      {({ isAuthenticated }) =>
+        <Pane
+          width="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          padding="1rem"
+          background="white"
+        >
+          <Heading is="h1" size={900}>
+            Sidecar
+          </Heading>
+          <TabNavigation>
+            <ExactNavLink to="/">Home</ExactNavLink>
+            {!isAuthenticated &&
+              <React.Fragment>
+                <ExactNavLink to="/sign-in">Sign In</ExactNavLink>
+                <ExactNavLink to="/sign-up">Sign Up</ExactNavLink>
+              </React.Fragment>}
+            {isAuthenticated &&
+              <React.Fragment>
+                <ExactNavLink to="/sign-out">Sign Out</ExactNavLink>
+              </React.Fragment>}
+          </TabNavigation>
+        </Pane>}
+    </AuthenticationContext.Consumer>
   );
 };
 
@@ -124,38 +130,40 @@ class Home extends React.Component {
 
 const App = () => {
   return (
-    <Pane>
-      <Header />
-      <Pane
-        className="base-background"
-        display="flex"
-        justifyContent="center"
-        width="100%"
-        padding="1rem"
-        height="100%"
-      >
+    <AuthenticationProvider>
+      <Pane>
+        <Header />
         <Pane
-          elevation={2}
+          className="base-background"
           display="flex"
-          flexDirection="column"
-          alignItems="center"
-          maxWidth="540px"
+          justifyContent="center"
           width="100%"
-          background="#fff"
-          padding="2rem"
-          borderRadius="0.25rem"
+          padding="1rem"
+          height="100%"
         >
-          <Router>
-            <Home path="/" />
-            <SignIn path="/sign-in" />
-            <SignUp path="/sign-up" />
-            <SignOut path="/sign-out" />
-            <CreateRecipe path="/recipe/new" />
-            <UpdateRecipe path="/recipe/:id/edit" />
-          </Router>
+          <Pane
+            elevation={2}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            maxWidth="540px"
+            width="100%"
+            background="#fff"
+            padding="2rem"
+            borderRadius="0.25rem"
+          >
+            <Router>
+              <Home path="/" />
+              <SignIn path="/sign-in" />
+              <SignUp path="/sign-up" />
+              <SignOut path="/sign-out" />
+              <CreateRecipe path="/recipe/new" />
+              <UpdateRecipe path="/recipe/:id/edit" />
+            </Router>
+          </Pane>
         </Pane>
       </Pane>
-    </Pane>
+    </AuthenticationProvider>
   );
 };
 

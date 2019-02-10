@@ -3,6 +3,7 @@ import { navigate } from '@reach/router';
 import React from 'react';
 
 import { post } from '../utils/fetchUtils';
+import AuthenticationContext from '../AuthenticationContext';
 import SectionHeading from '../components/SectionHeading';
 
 export const INITIAL_STATUS = 'initial_status';
@@ -39,6 +40,7 @@ class SignIn extends React.Component {
         if (json.error) {
           this.setFailedStatus({ message: json.error });
         } else {
+          this.props.checkAuthStatus();
           navigate('/');
         }
       })
@@ -108,4 +110,11 @@ class SignIn extends React.Component {
   }
 }
 
-export default SignIn;
+export default props => {
+  return (
+    <AuthenticationContext.Consumer>
+      {({ checkAuthStatus }) =>
+        <SignIn checkAuthStatus={checkAuthStatus} {...props} />}
+    </AuthenticationContext.Consumer>
+  );
+};
