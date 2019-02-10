@@ -2,7 +2,7 @@ import { Alert, Button, Pane, TextInputField } from 'evergreen-ui';
 import { navigate } from '@reach/router';
 import React from 'react';
 
-import { setAuthToken } from '../utils/authentication';
+import { post } from '../utils/fetchUtils';
 import SectionHeading from '../components/SectionHeading';
 
 export const INITIAL_STATUS = 'initial_status';
@@ -28,18 +28,13 @@ class SignIn extends React.Component {
   signIn = ({ email, password }) => {
     this.setLoadingStatus();
 
-    fetch('/api/sign_in', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    post({
+      endpoint: '/api/sign_in',
+      body: {
         email,
         password,
-      }),
+      },
     })
-      .then(response => {
-        setAuthToken(response.headers.get('Authorization'));
-        return response.json();
-      })
       .then(json => {
         if (json.error) {
           this.setFailedStatus({ message: json.error });

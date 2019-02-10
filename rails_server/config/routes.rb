@@ -7,5 +7,7 @@ Rails.application.routes.draw do
     post '/sign_up', to: 'authentication#sign_up'
     post '/sign_in', to: 'authentication#sign_in'
     get  '/user', to: 'user#show'
+
+    resources :recipes
   end
 end
