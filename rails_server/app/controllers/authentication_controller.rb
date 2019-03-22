@@ -2,7 +2,7 @@ class AuthenticationController < ApiController
   skip_before_action :check_authentication, only: [:sign_up, :sign_in]
 
   def sign_in
-    user_auth = UserAuthentication.sign_in(params[:email], params[:password])
+    user_auth = UserAuthentication.sign_in(sign_in_params[:email], sign_in_params[:password])
 
     if user_auth.token
       response.set_header('AUTHORIZATION', "Bearer #{user_auth.token}")
@@ -13,7 +13,7 @@ class AuthenticationController < ApiController
   end
 
   def sign_up
-    user_auth = UserAuthentication.sign_up(user_params)
+    user_auth = UserAuthentication.sign_up(sign_up_params)
 
     if user_auth.token
       response.set_header('AUTHORIZATION', "Bearer #{user_auth.token}")
@@ -25,7 +25,11 @@ class AuthenticationController < ApiController
 
   private
 
-  def user_params
+  def sign_in_params
+    params.permit(:email, :password)
+  end
+
+  def sign_up_params
     params.permit(:email, :password, :password_confirmation)
   end
 end
