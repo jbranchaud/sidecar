@@ -8,6 +8,7 @@ import { get } from './utils/fetchUtils';
 import { getAuthToken, isAuthenticated } from './utils/authentication';
 import CreateRecipe from './Recipe/CreateRecipe';
 import SectionHeading from './components/SectionHeading';
+import ShowRecipe from './Recipe/ShowRecipe';
 import SignIn from './SignIn';
 import SignOut from './SignOut';
 import SignUp from './SignUp';
@@ -77,7 +78,9 @@ const RecipeListing = ({ recipes }) => {
                 background={(isOdd && 'tint2') || ''}
               >
                 <Text>
-                  {recipe.attributes.name}
+                  <Link to={`recipe/${recipe.id}`}>
+                    {recipe.attributes.name}
+                  </Link>
                 </Text>
                 <Pane display="flex">
                   <Pane borderRadius="3px" padding="2px" marginLeft="2px">
@@ -191,6 +194,7 @@ const App = () => {
             <SignOut path="/sign-out" />
             <CreateRecipe path="/recipe/new" />
             <UpdateRecipe path="/recipe/:id/edit" />
+            <ShowRecipe path="/recipe/:id" />
           </Router>
         </Pane>
       </Pane>
