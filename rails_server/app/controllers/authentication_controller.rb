@@ -1,5 +1,6 @@
 class AuthenticationController < ApiController
-  skip_before_action :check_authentication, only: [:sign_up, :sign_in]
+  skip_before_action :check_authentication,
+    only: [:sign_up, :sign_in, :request_password_reset_link]
 
   def sign_in
     user_auth = UserAuthentication.sign_in(sign_in_params[:email], sign_in_params[:password])
@@ -20,6 +21,21 @@ class AuthenticationController < ApiController
       render json: {success: true, message: "You successfully signed up!"}
     else
       render json: {success: false, message: user_auth.error}
+    end
+  end
+
+  def request_password_reset_link
+    if user = User.find_by(email: params[:email])
+      reset_token = SecureRandom.uuid
+
+      token_record = PasswordResetToken.new(reset_token: reset_token, user_id: user.id)
+      if token_record.save!
+        render json: { reset_token: reset_token }.to_json, status: 200
+      else
+        render status: :bad_requeset
+      end
+    else
+      render status: :not_found
     end
   end
 
