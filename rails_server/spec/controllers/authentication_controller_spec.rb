@@ -4,8 +4,7 @@ describe AuthenticationController do
   describe 'POST #request_password_reset_link' do
     context 'when user email is valid' do
       it 'responds with a 200 and UUID token' do
-        user = User.new(email: "user1@example.com", password: "password")
-        user.save!
+        user = User.create(email: "user1@example.com", password: "password")
 
         post :request_password_reset_link, params: { email: user.email, format: :json}
 
@@ -27,9 +26,7 @@ describe AuthenticationController do
 
   describe 'PUT #reset_password' do
     let(:user) {
-        user = User.new(email: "user1@example.com", password: "password")
-        user.save!
-        user
+      User.create(email: "user1@example.com", password: "password")
     }
     let(:reset_token) {
         reset_token = SecureRandom.uuid
