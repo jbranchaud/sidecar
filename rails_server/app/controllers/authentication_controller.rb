@@ -32,7 +32,7 @@ class AuthenticationController < ApiController
       if token_record.save!
         render json: { reset_token: reset_token }.to_json, status: 200
       else
-        render status: :bad_requeset
+        render status: :bad_request
       end
     else
       render status: :not_found
