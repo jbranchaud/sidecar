@@ -2,6 +2,8 @@ class ApiController < ActionController::API
   before_action :check_authentication
   attr_reader :current_user
 
+  include Response
+
   private
 
   def check_authentication

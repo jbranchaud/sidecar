@@ -48,6 +48,7 @@ describe AuthenticationController do
           }
 
         expect(response.status).to eq(200)
+        expect(response.body).to eq("{}")
 
         expect(user.reload.authenticate(new_password)).to be_truthy
       end
@@ -66,6 +67,7 @@ describe AuthenticationController do
           }
 
         expect(response.status).to eq(400)
+        expect(response.body).to eq("{}")
       end
     end
 
@@ -81,6 +83,7 @@ describe AuthenticationController do
         }
 
         expect(response.status).to eq(404)
+        expect(response.body).to eq("{}")
       end
     end
   end

@@ -44,12 +44,18 @@ class AuthenticationController < ApiController
 
     if reset_record && user = User.find(reset_record.user_id)
       if user.update(password: params[:password], password_confirmation: params[:password_confirmation])
-        render status: :ok
+        json_response({}, :ok)
+        # head :ok
+        # render json: {}.to_json, status: :ok
       else
-        render status: :bad_request
+        json_response({}, :bad_request)
+        # head :bad_request
+        # render json: {}.to_json, status: :bad_request
       end
     else
-      render status: :not_found
+      json_response({}, :not_found)
+      # head :not_found
+      # render json: {}.to_json, status: :not_found
     end
   end
 
