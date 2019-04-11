@@ -53,8 +53,12 @@ class AuthenticationController < ApiController
   private
 
   def find_user_by_reset_token!(reset_token)
-    reset_record = PasswordResetToken.find_by!(reset_token: reset_token)
-    User.find(reset_record.user_id)
+    # TODO: Figure out why the join query is slower than these two combined
+    # reset_record = PasswordResetToken.find_by!(reset_token: reset_token)
+    # User.find(reset_record.user_id)
+    User.joins(:password_reset_token)
+      .where({ password_reset_tokens: {reset_token: reset_token}})
+      .first!
   end
 
   def sign_in_params
