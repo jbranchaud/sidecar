@@ -40,26 +40,24 @@ class AuthenticationController < ApiController
   end
 
   def reset_password
-    reset_record = PasswordResetToken.find_by(reset_token: params[:reset_token])
-
-    if reset_record && user = User.find(reset_record.user_id)
+    begin
+      user = find_user_by_reset_token!(params[:reset_token])
       if user.update(password: params[:password], password_confirmation: params[:password_confirmation])
         json_response({}, :ok)
-        # head :ok
-        # render json: {}.to_json, status: :ok
       else
         json_response({}, :bad_request)
-        # head :bad_request
-        # render json: {}.to_json, status: :bad_request
       end
-    else
+    rescue ActiveRecord::RecordNotFound => e
       json_response({}, :not_found)
-      # head :not_found
-      # render json: {}.to_json, status: :not_found
     end
   end
 
   private
+
+  def find_user_by_reset_token!(reset_token)
+    reset_record = PasswordResetToken.find_by!(reset_token: reset_token)
+    User.find(reset_record.user_id)
+  end
 
   def sign_in_params
     params.permit(:email, :password)
