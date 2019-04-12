@@ -25,18 +25,21 @@ class AuthenticationController < ApiController
   end
 
   def request_password_reset_link
-    if user = User.find_by(email: params[:email])
+    if user = User.find_by(email: get_email_param)
       reset_token = SecureRandom.uuid
 
       token_record = PasswordResetToken.new(reset_token: reset_token, user_id: user.id)
       if token_record.save!
-        json_response({ reset_token: reset_token }, :ok)
-      else
-        json_response({}, :bad_request)
+        PasswordResetMailer
+          .with(user: user, reset_record: token_record)
+          .default_email
+          .deliver_later
       end
-    else
-      json_response({}, :not_found)
     end
+
+    json_response({}, :ok)
+  rescue ActionController::ParameterMissing => e
+    json_response({}, :bad_request)
   end
 
   def reset_password
@@ -67,6 +70,10 @@ class AuthenticationController < ApiController
 
   def sign_up_params
     params.permit(:email, :password, :password_confirmation)
+  end
+
+  def get_email_param
+    params.require(:email)
   end
 
   def reset_password_params

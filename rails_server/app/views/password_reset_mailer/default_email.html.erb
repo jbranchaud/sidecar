@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <p>Hi, <%= @user.email %></p>
+
+    <p>We received a request to reset your password. If this was a mistake, feel free to ignore this email.</p>
+
+    <p>Otherwise, click on this link to reset your password: <%= "http://localhost:3000/password-reset/#{@reset_record.reset_token}" %></p>
+  </body>
+</html>

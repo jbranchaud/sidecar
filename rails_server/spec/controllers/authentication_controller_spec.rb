@@ -1,27 +1,43 @@
 require "rails_helper"
+include ActionMailer::TestHelper
 
 describe AuthenticationController do
   describe "POST #request_password_reset_link" do
+    before(:each) do
+      ActionMailer::Base.deliveries.clear
+    end
+
     context "when user email is valid" do
-      it "responds with a 200 and UUID token" do
-        user = User.create(email: "user1@example.com", password: "password")
+      it "responds with a 200 and an email is sent" do
+        user_email = "user1@example.com"
+        user = User.create(email: user_email, password: "password")
 
         post :request_password_reset_link,
           params: {email: user.email, format: :json}
 
         expect(response.status).to eq(200)
-
-        body = JSON.parse(response.body)
-        expect(body["reset_token"]).to be
+        expect(response.body).to eq("{}")
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
       end
     end
 
     context "when user email is not found" do
-      it "responds with a 404" do
+      it "responds with a 200 and no email sent" do
         post :request_password_reset_link,
           params: {email: "nonexistant@example.com", format: :json}
 
-        expect(response.status).to eq(404)
+        expect(response.status).to eq(200)
+        expect(response.body).to eq("{}")
+        expect(ActionMailer::Base.deliveries).to be_empty
+      end
+    end
+
+    context "when user email is not provided" do
+      it "responds with a 400" do
+        post :request_password_reset_link,
+          params: {foo: "bar", format: :json}
+
+        expect(response.status).to eq(400)
         expect(response.body).to eq("{}")
       end
     end
