@@ -41,7 +41,7 @@ class AuthenticationController < ApiController
 
   def reset_password
     user = find_user_by_reset_token!(params[:reset_token])
-    if user.update(password: params[:password], password_confirmation: params[:password_confirmation])
+    if user.update(reset_password_params)
       json_response({}, :ok)
     else
       json_response({}, :bad_request)
@@ -67,5 +67,9 @@ class AuthenticationController < ApiController
 
   def sign_up_params
     params.permit(:email, :password, :password_confirmation)
+  end
+
+  def reset_password_params
+    params.permit(:password, :password_confirmation)
   end
 end
