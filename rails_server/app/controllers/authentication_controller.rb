@@ -30,12 +30,12 @@ class AuthenticationController < ApiController
 
       token_record = PasswordResetToken.new(reset_token: reset_token, user_id: user.id)
       if token_record.save!
-        render json: { reset_token: reset_token }.to_json, status: 200
+        json_response({ reset_token: reset_token }, :ok)
       else
-        render status: :bad_request
+        json_response({}, :bad_request)
       end
     else
-      render status: :not_found
+      json_response({}, :not_found)
     end
   end
 

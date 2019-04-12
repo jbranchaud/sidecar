@@ -22,6 +22,7 @@ describe AuthenticationController do
           params: {email: "nonexistant@example.com", format: :json}
 
         expect(response.status).to eq(404)
+        expect(response.body).to eq("{}")
       end
     end
   end
