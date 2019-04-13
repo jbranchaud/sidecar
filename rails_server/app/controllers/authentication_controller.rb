@@ -31,8 +31,7 @@ class AuthenticationController < ApiController
       token_record = PasswordResetToken.new(reset_token: reset_token, user_id: user.id)
       if token_record.save!
         PasswordResetMailer
-          .with(user: user, reset_record: token_record)
-          .default_email
+          .default_email(user, token_record)
           .deliver_later
       end
     end

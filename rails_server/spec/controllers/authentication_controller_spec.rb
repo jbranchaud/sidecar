@@ -12,12 +12,15 @@ describe AuthenticationController do
         user_email = "user1@example.com"
         user = User.create(email: user_email, password: "password")
 
+        message_delivery = instance_double(ActionMailer::MessageDelivery)
+        expect(PasswordResetMailer).to receive(:default_email).and_return(message_delivery)
+        allow(message_delivery).to receive(:deliver_later)
+
         post :request_password_reset_link,
           params: {email: user.email, format: :json}
 
         expect(response.status).to eq(200)
         expect(response.body).to eq("{}")
-        expect(ActionMailer::Base.deliveries.count).to eq(1)
       end
     end
 
