@@ -55,16 +55,15 @@ class ForgotPassword extends React.Component {
         validationSchema={Yup.object().shape({
           email: Yup.string().label('Email').required(),
         })}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values, { setSubmitting, resetForm }) => {
           post({
             endpoint: '/api/request_password_reset',
             body: {
               email: values.email,
             },
           }).then(json => {
-            if (json.success) {
-              toaster.success('Password reset email sent');
-            }
+            resetForm();
+            toaster.success('Password reset email sent');
 
             setSubmitting(false);
           });
