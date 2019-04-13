@@ -7,6 +7,7 @@ import React from 'react';
 import { get } from './utils/fetchUtils';
 import { getAuthToken, isAuthenticated } from './utils/authentication';
 import CreateRecipe from './Recipe/CreateRecipe';
+import ForgotPassword from './ForgotPassword';
 import PasswordReset from './PasswordReset';
 import SectionHeading from './components/SectionHeading';
 import ShowRecipe from './Recipe/ShowRecipe';
@@ -193,6 +194,7 @@ const App = () => {
             <SignIn path="/sign-in" />
             <SignUp path="/sign-up" />
             <SignOut path="/sign-out" />
+            <ForgotPassword path="/forgot-password" />
             <PasswordReset path="/password-reset/:reset-token" />
             <CreateRecipe path="/recipe/new" />
             <UpdateRecipe path="/recipe/:id/edit" />
