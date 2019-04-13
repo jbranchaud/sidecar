@@ -7,8 +7,8 @@ Rails.application.routes.draw do
     post '/sign_up', to: 'authentication#sign_up'
     post '/sign_in', to: 'authentication#sign_in'
     get  '/user', to: 'user#show'
-    post '/reset_password', to: 'authentication#request_password_reset_link'
-    put '/update_password', to: 'authentication#reset_password'
+    post '/request_password_reset', to: 'authentication#request_password_reset_link'
+    put '/reset_password', to: 'authentication#reset_password'
 
     resources :recipes
   end

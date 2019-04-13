@@ -1,77 +1,149 @@
-import { Button, Pane, TextInputField } from 'evergreen-ui';
+import { Button, Pane, TextInputField, toaster } from 'evergreen-ui';
+import { Formik } from 'formik';
+import { navigate } from '@reach/router';
 import React from 'react';
+import * as Yup from 'yup';
 
 import { put } from '../utils/fetchUtils';
 import SectionHeading from '../components/SectionHeading';
 
-class PasswordReset extends React.Component {
+export const INITIAL_STATUS = 'initial_status';
+export const LOADING_STATUS = 'loading_status';
+export const SUCCESS_STATUS = 'success_status';
+export const FAILED_STATUS = 'failed_status';
+
+class PasswordResetContainer extends React.Component {
   state = {
-    password: '',
-    passwordConfirm: '',
+    status: INITIAL_STATUS,
+    message: null,
   };
 
-  onPasswordChange = e => {
-    this.setState({ password: e.target.value });
+  setLoadingStatus = () => {
+    this.setState({ status: LOADING_STATUS, message: null });
   };
 
-  onPasswordConfirmChange = e => {
-    this.setState({ passwordConfirm: e.target.value });
+  setSuccessStatus = () => {
+    this.setState({ status: SUCCESS_STATUS });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-
-    const { password, passwordConfirm } = this.state;
-    const { 'reset-token': resetToken } = this.props;
-    console.log({ resetToken, password, passwordConfirm });
-
-    put({
-      endpoint: '/api/update_password',
-      body: {
-        reset_token: resetToken,
-        password,
-        password_confirm: passwordConfirm,
-      },
-    })
-      .then(json => {
-        console.log(json);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  setFailedStatus = ({ message }) => {
+    this.setState({ status: FAILED_STATUS, message: message || 'Failure!' });
   };
 
   render() {
     return (
-      <form submit={this.handleSubmit}>
-        <Pane display="flex" flexDirection="column" width="280px">
-          <SectionHeading>Reset Password</SectionHeading>
-          <TextInputField
-            label="Password"
-            type="password"
-            name="password"
-            onChange={this.onPasswordChange}
-            value={this.state.password}
-          />
-          <TextInputField
-            label="Password Confirmation"
-            type="password"
-            name="passwordConfirmation"
-            onChange={this.onPasswordConfirmChange}
-            value={this.state.passwordConfirm}
-          />
-          <Button
-            intent="default"
-            type="submit"
-            onClick={this.handleSubmit}
-            justifyContent="center"
-          >
-            Reset Password
-          </Button>
-        </Pane>
-      </form>
+      <Formik
+        initialValues={{ password: '', passwordConfirmation: '' }}
+        validationSchema={Yup.object().shape({
+          password: Yup.string().label('Password').required(),
+          passwordConfirmation: Yup.string()
+            .required()
+            .label('Password Confirmation')
+            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+        })}
+        onSubmit={(values, { setSubmitting }) => {
+          this.setLoadingStatus();
+
+          put({
+            endpoint: '/api/reset_password',
+            body: {
+              reset_token: this.props['reset-token'],
+              password: values.password,
+              password_confirm: values.passwordConfirmation,
+            },
+          })
+            .then(json => {
+              this.setSuccessStatus();
+              toaster.success('Password reset!');
+              navigate('/');
+
+              setSubmitting(false);
+            })
+            .catch(err => {
+              this.setFailedStatus({ message: err.message });
+              setSubmitting(false);
+            });
+        }}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) =>
+          <PasswordResetForm
+            values={values}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            errors={errors}
+            touched={touched}
+            status={this.state.status}
+            message={this.state.message}
+          />}
+      </Formik>
     );
   }
 }
 
-export default PasswordReset;
+const PasswordResetForm = ({
+  values,
+  onChange,
+  onSubmit,
+  isSubmitting,
+  errors,
+  touched,
+  status,
+  message,
+}) => {
+  const passwordIsInvalid = !!(errors['password'] && touched['password']);
+  const passwordValidationMessage = passwordIsInvalid
+    ? errors['password']
+    : null;
+
+  const passwordConfirmationIsInvalid = !!(
+    errors['passwordConfirmation'] && touched['passwordConfirmation']
+  );
+  const passwordConfirmationValidationMessage = passwordConfirmationIsInvalid
+    ? errors['passwordConfirmation']
+    : null;
+
+  return (
+    <form onSubmit={onSubmit}>
+      <Pane display="flex" flexDirection="column" width="280px">
+        <SectionHeading>Reset Password</SectionHeading>
+        <TextInputField
+          label="Password"
+          type="password"
+          name="password"
+          onChange={onChange}
+          value={values.password}
+          isInvalid={passwordIsInvalid}
+          validationMessage={passwordValidationMessage}
+        />
+        <TextInputField
+          label="Password Confirmation"
+          type="password"
+          name="passwordConfirmation"
+          onChange={onChange}
+          value={values.passwordConfirmation}
+          isInvalid={passwordConfirmationIsInvalid}
+          validationMessage={passwordConfirmationValidationMessage}
+        />
+        <Button
+          intent="default"
+          type="submit"
+          onClick={onSubmit}
+          justifyContent="center"
+        >
+          Reset Password
+        </Button>
+      </Pane>
+    </form>
+  );
+};
+
+export default PasswordResetContainer;
