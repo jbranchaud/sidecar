@@ -1,5 +1,4 @@
 require "rails_helper"
-include ActionMailer::TestHelper
 
 describe AuthenticationController do
   describe "POST #request_password_reset_link" do
