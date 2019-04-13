@@ -1,6 +1,16 @@
 require "rails_helper"
 include ActionMailer::TestHelper
 
+require 'rspec/expectations'
+
+RSpec::Matchers.define :send_email do |mailer_action|
+  match do |mailer_class|
+    message_delivery = instance_double(ActionMailer::MessageDelivery)
+    expect(mailer_class).to receive(mailer_action).and_return(message_delivery)
+    allow(message_delivery).to receive(:deliver_later)
+  end
+end
+
 describe AuthenticationController do
   describe "POST #request_password_reset_link" do
     before(:each) do
@@ -12,9 +22,7 @@ describe AuthenticationController do
         user_email = "user1@example.com"
         user = User.create(email: user_email, password: "password")
 
-        message_delivery = instance_double(ActionMailer::MessageDelivery)
-        expect(PasswordResetMailer).to receive(:default_email).and_return(message_delivery)
-        allow(message_delivery).to receive(:deliver_later)
+        expect(PasswordResetMailer).to send_email(:default_email)
 
         post :request_password_reset_link,
           params: {email: user.email, format: :json}
