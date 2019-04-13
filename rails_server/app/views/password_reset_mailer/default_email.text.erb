@@ -2,4 +2,4 @@ Hi, <%= @user.email %>
 
 We received a request to reset your password. If this was a mistake, feel free to ignore this email.
 
-Otherwise, click on this link to reset your password: <%= "http://localhost:3000/password-reset/#{@reset_record.reset_token}" %>
+Otherwise, click on this link to reset your password: <%= @password_reset_url %>

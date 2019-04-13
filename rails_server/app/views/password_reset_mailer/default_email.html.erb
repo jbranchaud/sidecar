@@ -8,6 +8,6 @@
 
     <p>We received a request to reset your password. If this was a mistake, feel free to ignore this email.</p>
 
-    <p>Otherwise, click on this link to reset your password: <%= "http://localhost:3000/password-reset/#{@reset_record.reset_token}" %></p>
+    <p>Otherwise, click on this link to reset your password: <%= link_to(@password_reset_url, @password_reset_url) %></p>
   </body>
 </html>
