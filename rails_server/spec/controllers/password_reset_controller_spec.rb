@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe AuthenticationController do
+describe PasswordResetController do
   describe "POST #request_password_reset_link" do
     before(:each) do
       ActionMailer::Base.deliveries.clear

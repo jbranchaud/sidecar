@@ -1,6 +1,6 @@
 class AuthenticationController < ApiController
   skip_before_action :check_authentication,
-    only: [:sign_up, :sign_in, :request_password_reset_link, :reset_password]
+    only: [:sign_up, :sign_in]
 
   def sign_in
     user_auth = UserAuthentication.sign_in(sign_in_params[:email], sign_in_params[:password])
@@ -24,46 +24,7 @@ class AuthenticationController < ApiController
     end
   end
 
-  def request_password_reset_link
-    if user_with_token = find_user_with_fresh_reset_token!(get_email_param)
-      PasswordResetMailer
-        .default_email(user_with_token, user_with_token.password_reset_token)
-        .deliver_later
-    end
-
-    json_response({}, :ok)
-  rescue ActionController::ParameterMissing => e
-    json_response({}, :bad_request)
-  end
-
-  def reset_password
-    user = find_user_by_reset_token!(params[:reset_token])
-    if user.update(reset_password_params)
-      json_response({}, :ok)
-    else
-      json_response({}, :bad_request)
-    end
-  rescue ActiveRecord::RecordNotFound => e
-    json_response({}, :not_found)
-  end
-
   private
-
-  def find_user_by_reset_token!(reset_token)
-    # TODO: Figure out why the join query is slower than these two combined
-    # reset_record = PasswordResetToken.find_by!(reset_token: reset_token)
-    # User.find(reset_record.user_id)
-    User.joins(:password_reset_token)
-      .where({ password_reset_tokens: {reset_token: reset_token}})
-      .first!
-  end
-
-  def find_user_with_fresh_reset_token!(email)
-    if user = User.find_by(email: email)
-      PasswordResetToken.regenerate_token_for(user)
-      user
-    end
-  end
 
   def sign_in_params
     params.permit(:email, :password)
@@ -71,13 +32,5 @@ class AuthenticationController < ApiController
 
   def sign_up_params
     params.permit(:email, :password, :password_confirmation)
-  end
-
-  def get_email_param
-    params.require(:email)
-  end
-
-  def reset_password_params
-    params.permit(:password, :password_confirmation)
   end
 end
