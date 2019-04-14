@@ -25,9 +25,9 @@ class AuthenticationController < ApiController
   end
 
   def request_password_reset_link
-    if user_with_token = UserWithPasswordResetToken.new(get_email_param)
+    if user_with_token = find_user_with_fresh_reset_token!(get_email_param)
       PasswordResetMailer
-        .default_email(user_with_token.user, user_with_token.token_record)
+        .default_email(user_with_token, user_with_token.password_reset_token)
         .deliver_later
     end
 
@@ -56,6 +56,13 @@ class AuthenticationController < ApiController
     User.joins(:password_reset_token)
       .where({ password_reset_tokens: {reset_token: reset_token}})
       .first!
+  end
+
+  def find_user_with_fresh_reset_token!(email)
+    if user = User.find_by(email: email)
+      PasswordResetToken.regenerate_token_for(user)
+      user
+    end
   end
 
   def sign_in_params
