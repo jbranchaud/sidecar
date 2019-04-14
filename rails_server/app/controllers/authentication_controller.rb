@@ -25,15 +25,10 @@ class AuthenticationController < ApiController
   end
 
   def request_password_reset_link
-    if user = User.find_by(email: get_email_param)
-      reset_token = SecureRandom.uuid
-
-      token_record = PasswordResetToken.new(reset_token: reset_token, user_id: user.id)
-      if token_record.save!
-        PasswordResetMailer
-          .default_email(user, token_record)
-          .deliver_later
-      end
+    if user_with_token = UserWithPasswordResetToken.new(get_email_param)
+      PasswordResetMailer
+        .default_email(user_with_token.user, user_with_token.token_record)
+        .deliver_later
     end
 
     json_response({}, :ok)
