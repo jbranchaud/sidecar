@@ -1,5 +1,5 @@
 import { Alert, Button, Pane, TextInputField } from 'evergreen-ui';
-import { navigate } from '@reach/router';
+import { Link, navigate } from '@reach/router';
 import React from 'react';
 
 import { post } from '../utils/fetchUtils';
@@ -102,6 +102,9 @@ class SignIn extends React.Component {
           >
             Sign In
           </Button>
+          <small>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </small>
         </Pane>
       </form>
     );

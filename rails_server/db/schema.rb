@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_06_234202) do
+ActiveRecord::Schema.define(version: 2019_04_13_183631) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,12 @@ ActiveRecord::Schema.define(version: 2019_02_06_234202) do
     t.datetime "updated_at", default: -> { "now()" }, null: false
   end
 
+  create_table "password_reset_tokens", primary_key: "reset_token", id: :uuid, default: nil, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.index ["user_id"], name: "password_reset_tokens_unique_user_id", unique: true
+  end
+
   create_table "recipes", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.string "source_url", null: false
@@ -64,5 +70,6 @@ ActiveRecord::Schema.define(version: 2019_02_06_234202) do
     t.index ["email"], name: "users_email_key", unique: true
   end
 
+  add_foreign_key "password_reset_tokens", "users", name: "password_reset_tokens_user_id_fkey"
   add_foreign_key "recipes", "users", name: "recipes_user_id_fkey"
 end

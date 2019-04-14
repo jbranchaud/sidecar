@@ -12,3 +12,8 @@ Then, visit [`localhost:3000`](http://localhost:3000) to interact with the
 client interface of the app. Additionally, visit
 [`localhost:3001/admin`](http://localhost:3001/admin) to access the
 Rails-powered admin panel for the app.
+
+## Dev Dependencies
+
+- [MailHog](https://github.com/mailhog/MailHog) - a self-hosted SMTP server
+  for use in development
