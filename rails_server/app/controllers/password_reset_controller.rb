@@ -14,8 +14,7 @@ class PasswordResetController < ApiController
   end
 
   def reset_password
-    user = find_user_by_reset_token!(params[:reset_token])
-    if user.update(reset_password_params)
+    if attempt_password_reset(params[:reset_token])
       json_response({}, :ok)
     else
       json_response({}, :bad_request)
@@ -25,6 +24,14 @@ class PasswordResetController < ApiController
   end
 
   private
+
+  def attempt_password_reset(reset_token)
+    user = find_user_by_reset_token!(params[:reset_token])
+    if user.update(reset_password_params)
+      user.password_reset_token.delete
+      user
+    end
+  end
 
   def find_user_by_reset_token!(reset_token)
     # TODO: Figure out why the join query is slower than these two combined

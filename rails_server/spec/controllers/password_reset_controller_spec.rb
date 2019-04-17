@@ -68,6 +68,7 @@ describe PasswordResetController do
         expect(response.body).to eq("{}")
 
         expect(user.reload.authenticate(new_password)).to be_truthy
+        expect(user.password_reset_token).to be_nil
       end
     end
 
