@@ -5,8 +5,7 @@ class PasswordResetController < ApiController
   def request_password_reset_link
     if user_with_token = find_user_with_fresh_reset_token!(get_email_param)
       PasswordResetMailer
-        .default_email(user_with_token, user_with_token.password_reset_token)
-        .deliver_later
+        .send_default_email(user_with_token, user_with_token.password_reset_token)
     end
 
     json_response({}, :ok)
