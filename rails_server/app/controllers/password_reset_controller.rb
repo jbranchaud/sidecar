@@ -14,7 +14,7 @@ class PasswordResetController < ApiController
   end
 
   def reset_password
-    if attempt_password_reset(params[:reset_token])
+    if attempt_password_reset(get_password_reset_token)
       json_response({}, :ok)
     else
       json_response({}, :bad_request)
@@ -26,7 +26,7 @@ class PasswordResetController < ApiController
   private
 
   def attempt_password_reset(reset_token)
-    user = find_user_by_reset_token!(params[:reset_token])
+    user = find_user_by_reset_token!(reset_token)
     if user.update(reset_password_params)
       user.password_reset_token.delete
       user
@@ -51,6 +51,10 @@ class PasswordResetController < ApiController
 
   def get_email_param
     params.require(:email)
+  end
+
+  def get_password_reset_token
+    params.require(:reset_token)
   end
 
   def reset_password_params
