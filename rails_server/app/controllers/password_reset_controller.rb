@@ -28,8 +28,7 @@ class PasswordResetController < ApiController
   def attempt_password_reset(reset_token)
     user = find_user_by_reset_token!(reset_token)
     if user.update(reset_password_params)
-      user.password_reset_token.delete
-      user
+      user.tap { |u| u.password_reset_token.delete }
     end
   end
 
