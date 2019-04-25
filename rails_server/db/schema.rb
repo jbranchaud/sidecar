@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_13_183631) do
+ActiveRecord::Schema.define(version: 2019_04_18_133844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,6 +51,7 @@ ActiveRecord::Schema.define(version: 2019_04_13_183631) do
   create_table "password_reset_tokens", primary_key: "reset_token", id: :uuid, default: nil, force: :cascade do |t|
     t.integer "user_id", null: false
     t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "expires_at", null: false
     t.index ["user_id"], name: "password_reset_tokens_unique_user_id", unique: true
   end
 

@@ -38,6 +38,7 @@ class PasswordResetController < ApiController
     # User.find(reset_record.user_id)
     User.joins(:password_reset_token)
       .where({ password_reset_tokens: {reset_token: reset_token}})
+      .where('expires_at > now()')
       .first!
   end
 
