@@ -48,8 +48,12 @@ describe PasswordResetController do
       User.create(email: "user1@example.com", password: "password")
     }
     let(:reset_token) {
+      token_record = PasswordResetToken.regenerate_token_for(user)
+      token_record.reset_token
+    }
+    let(:expired_reset_token) {
       reset_token = SecureRandom.uuid
-      PasswordResetToken.create(user_id: user.id, reset_token: reset_token)
+      PasswordResetToken.create(user_id: user.id, reset_token: reset_token, expires_at: Time.now - 2.minutes)
       reset_token
     }
     let(:new_password) { "new_password" }
@@ -69,6 +73,21 @@ describe PasswordResetController do
 
         expect(user.reload.authenticate(new_password)).to be_truthy
         expect(user.password_reset_token).to be_nil
+      end
+    end
+
+    context "when reset token is valid but expired" do
+      it "responds with a 404" do
+        put :reset_password,
+          params: {
+            reset_token: expired_reset_token,
+            password: new_password,
+            password_confirmation: new_password,
+            format: :json,
+          }
+
+        expect(response.status).to eq(404)
+        expect(response.body).to eq("{}")
       end
     end
 

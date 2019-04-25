@@ -17,7 +17,7 @@ describe PasswordResetToken do
     context 'given a user with an existing password_reset_token' do
       it 'updates the user with a new password_reset_token' do
         original_reset_token = SecureRandom.uuid
-        user.create_password_reset_token(reset_token: original_reset_token)
+        user.create_password_reset_token(reset_token: original_reset_token, expires_at: Time.now)
 
         PasswordResetToken.regenerate_token_for(user)
 
