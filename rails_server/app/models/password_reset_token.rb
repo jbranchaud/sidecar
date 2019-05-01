@@ -1,5 +1,7 @@
 class PasswordResetToken < ApplicationRecord
   def self.regenerate_token_for(user)
+    raise ActiveRecord::RecordNotFound unless user
+
     reset_token = SecureRandom.uuid
 
     ActiveRecord::Base.transaction do

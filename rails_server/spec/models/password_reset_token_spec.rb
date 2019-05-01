@@ -26,5 +26,14 @@ describe PasswordResetToken do
         expect(new_reset_token).to_not eq(original_reset_token)
       end
     end
+
+    context 'given no user (nil)' do
+      it 'raises a not found exception' do
+        no_user = nil
+
+        expect { PasswordResetToken.regenerate_token_for(no_user) }
+          .to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 end
