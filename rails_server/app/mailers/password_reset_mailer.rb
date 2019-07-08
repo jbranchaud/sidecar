@@ -1,6 +1,6 @@
 class PasswordResetMailer < ApplicationMailer
-  def self.send_default_email(user, reset_token)
-    default_email(user, reset_token).deliver_later
+  def self.send_default_email(user, password_reset_token)
+    default_email(user, password_reset_token.reset_token).deliver_later
   end
 
   def default_email(user, reset_token)
