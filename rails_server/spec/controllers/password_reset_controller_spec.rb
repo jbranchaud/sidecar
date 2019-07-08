@@ -11,7 +11,9 @@ describe PasswordResetController do
         user_email = "user1@example.com"
         user = User.create(email: user_email, password: "password")
 
-        expect(PasswordResetMailer).to send_email(:default_email)
+        expect(PasswordResetMailer)
+          .to send_email(:default_email)
+          .with(user, String)
 
         post :request_password_reset_link,
           params: {email: user.email, format: :json}
