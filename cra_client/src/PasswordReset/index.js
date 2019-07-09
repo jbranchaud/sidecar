@@ -1,6 +1,13 @@
-import { Button, Pane, TextInputField, toaster } from 'evergreen-ui';
+import {
+  Alert,
+  Button,
+  Pane,
+  Text,
+  TextInputField,
+  toaster,
+} from 'evergreen-ui';
 import { Formik } from 'formik';
-import { navigate } from '@reach/router';
+import { Link, navigate } from '@reach/router';
 import React from 'react';
 import * as Yup from 'yup';
 
@@ -11,6 +18,7 @@ export const INITIAL_STATUS = 'initial_status';
 export const LOADING_STATUS = 'loading_status';
 export const SUCCESS_STATUS = 'success_status';
 export const FAILED_STATUS = 'failed_status';
+const INVALID_RESET_PASSWORD_TOKEN = 'invalid_reset_password_token';
 
 class PasswordResetContainer extends React.Component {
   state = {
@@ -26,8 +34,8 @@ class PasswordResetContainer extends React.Component {
     this.setState({ status: SUCCESS_STATUS });
   };
 
-  setFailedStatus = ({ message }) => {
-    this.setState({ status: FAILED_STATUS, message: message || 'Failure!' });
+  setInvalidResetPasswordTokenStatus = () => {
+    this.setState({ status: INVALID_RESET_PASSWORD_TOKEN });
   };
 
   render() {
@@ -56,11 +64,12 @@ class PasswordResetContainer extends React.Component {
               this.setSuccessStatus();
               toaster.success('Password reset!');
               navigate('/');
-
-              setSubmitting(false);
             })
             .catch(err => {
-              this.setFailedStatus({ message: err.message });
+              console.log(err);
+              this.setInvalidResetPasswordTokenStatus();
+            })
+            .finally(() => {
               setSubmitting(false);
             });
         }}
@@ -89,6 +98,18 @@ class PasswordResetContainer extends React.Component {
   }
 }
 
+const InvalidResetPasswordTokenMessage = () => {
+  return (
+    <Alert intent="danger" title="We were unable to reset your password">
+      <Text>
+        It looks like this reset password link is invalid. If you'd like us to
+        send you a fresh reset password link,{' '}
+        <Link to="/forgot-password">click here</Link> to fill out the form.
+      </Text>
+    </Alert>
+  );
+};
+
 const PasswordResetForm = ({
   values,
   onChange,
@@ -115,6 +136,8 @@ const PasswordResetForm = ({
     <form onSubmit={onSubmit}>
       <Pane display="flex" flexDirection="column" width="280px">
         <SectionHeading>Reset Password</SectionHeading>
+        {status === INVALID_RESET_PASSWORD_TOKEN &&
+          <InvalidResetPasswordTokenMessage />}
         <TextInputField
           label="Password"
           type="password"
